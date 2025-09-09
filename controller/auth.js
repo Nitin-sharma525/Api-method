@@ -148,8 +148,6 @@ exports.userdata = async(req,res)=>{//handel http request
     }
 }
 
-
-
 //PATCH method
 exports.updateData = async(req,res)=>{
     try{
@@ -177,5 +175,28 @@ exports.updateData = async(req,res)=>{
     }catch(error){
         return res.status(500).json({message:'internal server error'});
 
+    }
+}
+
+//get method
+exports.getalluser = async(req,res)=>{
+    try{
+        const{uc_uuid}=req.params; 
+        if(!uc_uuid)
+            return res.status(400).json({message:'uc_uuid is require'});
+        const user = await User.findOne({uc_uuid});
+        if(!user){
+            return res.status(400).json({message:'user not found'});
+
+        }
+        await user.save();
+        return res.status(200).json({
+            status:true,
+            message:'get all user succesfully',
+            data:user
+        })
+
+    }catch(error){
+        return res.status(500).json({message:'internal server error'});
     }
 }
