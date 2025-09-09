@@ -1,7 +1,7 @@
-const User = require('../model/authmodel');//Import the User schema/model from the authmodel file
-const { v4: uuidv4 } = require('uuid');//Import uuid function to generate unique UUIDs
-const bcryptjs = require('bcryptjs');//Import bcryptjs to hash and compare passwords
-const jwt = require('jsonwebtoken');// Import JWT to generate and verify JSON web tokens
+const User = require('../model/authmodel');//import the User schema/model from the authmodel file
+const { v4: uuidv4 } = require('uuid');//import uuid function to generate unique UUIDs
+const bcryptjs = require('bcryptjs');//import bcryptjs to hash and compare passwords
+const jwt = require('jsonwebtoken');//import JWT to generate and verify JSON web tokens
 
 
 //register api
@@ -144,6 +144,38 @@ exports.userdata = async(req,res)=>{//handel http request
 
     }catch(error){
         return res.status(400).json({message:'internal server error'});
+
+    }
+}
+
+
+
+//PATCH method
+exports.updateData = async(req,res)=>{
+    try{
+        const{uc_uuid}=req.params;
+        const {uc_email}=req.body;
+        if(!uc_uuid){
+            return res.status(400).json({message:'uc_uuid is require'});
+        }
+        const user = await User.findOneAndUpdate(
+             { uc_uuid },
+            { uc_email },
+            { new: true }
+        );
+        if(!user){
+            return res.status(400).json({message:'user not found'});
+        }
+        await user.save();
+        return res.status(200).json({
+            status:true,
+            message:'user updated successfuly',
+            data:user
+        });
+
+
+    }catch(error){
+        return res.status(500).json({message:'internal server error'});
 
     }
 }
